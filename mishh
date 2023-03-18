@@ -1,0 +1,199 @@
+---
+title: "visualizacion"
+author: "MISHE CALERO"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+1. Réplica de la figura compuesta.
+```{r}
+library(ggpubr)
+library(patchwork)
+library(ggplot2)
+library(grid) 
+library(cowplot)
+library(gridExtra)
+library(ggrepel)
+library(dplyr)
+```
+
+
+```{r DATOS UTILIZADOS}
+#1
+data("ToothGrowth")
+head(ToothGrowth, n=4)
+#2
+data("mtcars")
+head(mtcars, n=4)
+#3
+data("diamonds")
+head(diamonds, n=4)
+
+```
+
+```{r}
+data("mtcars")
+mtcars$name  = rownames(mtcars)
+mtcars$cyl  = as.factor(mtcars$cyl)
+head(mtcars[, c("name", "wt", "mpg", "cyl")])
+
+```
+
+```{r}
+#Barplot por registro
+cyl1<-ggplot(mtcars, aes(x = reorder(name, mpg), y = mpg, fill = cyl)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  theme(legend.position = "left", 
+        axis.text.x = element_text(angle = 90)) + 
+  labs(title = "Consumo de combustible por cilindro", x = "Modelo", y = "Millas x galón", 
+       fill = "Cyl")+ 
+      theme(axis.text = element_text(size = 8),
+            axis.title = element_text(size = 8),
+            title = element_text(size = 8))
+cyl1
+```
+
+```{r}
+# Grafica de densidad
+diam <-ggplot(diamonds, aes(x = depth, fill = cut)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Distribución de la profundidad por el corte",
+       x = "Profundidad",
+       y = "Densidad") +
+  theme_minimal() +
+  scale_x_continuous(limits=c(55,70), breaks=seq(55,70,5)) +
+  scale_fill_brewer(palette="Set1") +
+  guides(fill=guide_legend(title="Corte"))+
+  theme(axis.text = element_text(size = 8),
+            axis.title = element_text(size = 8),
+            title = element_text(size = 8))
+diam
+
+```
+
+
+
+
+```{r}
+reg1 <- ggscatter(mtcars, x = "wt", y = "mpg", add = "reg.line", conf.int = TRUE, color = "cyl", palette = "jco", shape = "cyl") + 
+  stat_cor(aes(color = cyl), label.x = 3) + 
+  labs(title= "Relacion peso vs consumo de combustible",x = "Peso x coche", y = "Millas por galon") + 
+  theme(axis.text = element_text(size = 8),
+            axis.title = element_text(size = 8),
+            title = element_text(size = 8))
+reg1
+
+```
+
+
+
+```{r}
+#grafica de dispersion
+dt <- ggdotplot(ToothGrowth, x = "dose", y = "len", 
+                color = "dose", 
+                palette = "jco", 
+                binwidth = 1) +
+      # Añadir nombres a los ejes y un título al gráfico
+      labs(x = "Dosis de vitamina C mg",
+           y = "Longitud del diente mm", 
+           title = "Efecto de la vitamina C en el crecimiento del dental")+
+      # para definir una paleta de colores
+         scale_color_manual(values = c( "blue","green", "black"))+
+            theme(axis.text = element_text(size = 8),
+            axis.title = element_text(size = 8),
+            title = element_text(size = 8))
+dt 
+```
+
+```{r}
+## Gráfica zoom 
+set.seed(42)  
+n <- 1000    
+x <- runif(n) * 3 
+y <- x * sin(1/x) + rnorm(n) / 25 
+df <- data.frame(x = x, y = y)  
+zoom1 <- ggplot(df, aes(x, y)) + geom_point(alpha = 0.3, col = "brown2") + 
+  geom_smooth(se = FALSE) + theme_classic()  
+
+zoom1
+```
+
+
+```{r}
+## Grafica de calor
+Calor <- ggplot(faithfuld, aes(eruptions, waiting)) +
+  geom_raster(aes(fill = density))+
+  theme_classic2()+ 
+  scale_fill_gradientn(colours = heat.colors(8, rev = TRUE), na.value = "lightblue1") +
+  labs(title = "Datos del géiser Old Faithful", x = "Tiempo de espera hasta la próxima erupción", y = "Tiempo de erupción", fill = "density")+
+            theme(axis.text = element_text(size = 8),
+            axis.title = element_text(size = 8),
+            title = element_text(size = 8))
+Calor
+```
+```{r}
+##Graficas Unidas
+Completo =
+  ggarrange(cyl1, ggarrange(diam,ggarrange(zoom1,dt,reg1, Calor, ncol = 2, nrow = 2, 
+                                labels = c("B", "C", "D", "E")),ncol = 2, 
+                             labels = "F"), labels = "A", nrow = 2, common.legend = TRUE) +
+theme(axis.text = element_text(size = 0.5),
+            axis.title = element_text(size = 0.5),
+            title = element_text(size = 0.5))
+Completo
+```
+
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(grid)
+library(gridExtra)
+library(ggrepel)
+```
+
+
+
+
+
+```{r}
+#  gráfica principal con todos los países
+paises <- df_gapminder %>% 
+  filter(year == 2007) %>% 
+  ggplot(aes(x = gdpPercap, y = lifeExp, size = pop, color = continent)) +
+  geom_point() + 
+  labs(x = "Ingreso promedio",
+       y = "Exps life",
+       title="Esperanza de vida  - 2007",
+       caption="Fuente: Gapminder",
+       color="Continente: ") +
+  theme(legend.position="bottom", 
+        legend.title = element_text(face = "bold", color = "black", size= 10), 
+        panel.background = element_rect(fill = "white", colour = "grey80"), 
+        panel.grid.major = element_line(colour = "grey90", linetype = "dotted"))
+paises
+```
+
+```{r}
+# Para crear la gráfica con solo algunos países
+paises2 = ggplot(df_gapminder, aes(x = gdpPercap, y = lifeExp, 
+             size=pop, color=continent)) +
+  geom_point() + 
+  geom_text_repel(aes(label=country), size = 1.5) +
+  scale_x_continuous(limits = c(3000, 5000)) +
+  scale_y_continuous(limits = c(70, 80)) +
+  guides(size=FALSE) + 
+  theme(legend.position = "null")
+paises2
+```
+
+```{r}
+# Dibujar la gráfica principal
+embeb = paises + annotation_custom(ggplotGrob(paises2), 
+                        xmin = 30000, xmax = 50000, 
+                        ymin = 40, ymax = 70)
+embeb
+```
