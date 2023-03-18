@@ -136,14 +136,14 @@ Calor
 ```
 ```{r}
 ##Graficas Unidas
-Completo =
+unidas =
   ggarrange(cyl1, ggarrange(diam,ggarrange(zoom1,dt,reg1, Calor, ncol = 2, nrow = 2, 
                                 labels = c("B", "C", "D", "E")),ncol = 2, 
                              labels = "F"), labels = "A", nrow = 2, common.legend = TRUE) +
 theme(axis.text = element_text(size = 0.5),
             axis.title = element_text(size = 0.5),
             title = element_text(size = 0.5))
-Completo
+unidas
 ```
 
 
