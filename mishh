@@ -31,8 +31,7 @@ head(mtcars, n=4)
 #3
 data("diamonds")
 head(diamonds, n=4)
-# vizuañizacion de las grafica en drive
-https://drive.google.com/drive/folders/1B1aXQmtTQfhZ4CYD8YctpxhmqlBhl2Rl?usp=sharing
+
 ```
 
 ```{r}
@@ -198,3 +197,6 @@ embeb = paises + annotation_custom(ggplotGrob(paises2),
                         ymin = 40, ymax = 70)
 embeb
 ```
+
+# vizuañizacion de las grafica en drive
+https://drive.google.com/drive/folders/1B1aXQmtTQfhZ4CYD8YctpxhmqlBhl2Rl?usp=sharing
